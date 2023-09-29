@@ -2,9 +2,13 @@ from io import BytesIO
 from flask import jsonify, request
 from Extension import app, db
 from Extension.models import User, Video
+from Extension import get_allowed_file
 
 
-# Add a new user
+app.config["MAX_CONTENT_LENGTH"] = 100 * 1024  # 100 MB max size for a file
+app.config["UPLOAD_EXTENSIONS"] = get_allowed_file()
+
+# Add a new user to the database
 @app.route('/user', methods=['POST'])
 def add_user():
     data = request.get_json()
