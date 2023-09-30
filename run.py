@@ -1,11 +1,4 @@
-from flask import Flask
-from dotenv import load_dotenv
-from flask_cors import CORS
 from models import app
-
-load_dotenv()
-
-
 
 def get_allowed_file():
     return [
@@ -32,5 +25,3 @@ app.config["UPLOAD_EXTENSIONS"] = get_allowed_file()
 if __name__ == "__main__":
     app.run(debug=True)
 
-
-import models
