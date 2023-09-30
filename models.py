@@ -36,8 +36,24 @@ def upload_video():
     if not os.path.exists("static"):
         os.mkdir("static")
 
-    # Save the uploaded file with the combined file name
-    upload.save(os.path.join("static", combined_file_name))
+    # # Save the uploaded file temporarily
+    # temp_path = os.path.join("temp", combined_file_name)
+    # upload.save(temp_path)
+
+    # # Save the uploaded file with the combined file name
+    # upload.save(os.path.join("static", combined_file_name))
+    file_path = os.path.join("static", combined_file_name)
+    # Save the uploaded file temporarily
+    upload.save(file_path)
+
+    # # Get the size of the compressed video
+    # file_size = round(os.path.getsize(file_path) / (1024 * 1024))
+    # Get the size of the video in bytes
+    file_size = os.path.getsize(file_path)
+
+    # Convert the size to megabytes with one decimal place
+    size_mb = round(file_size / (1024 * 1024), 1)
+    file_size = f"{size_mb} MB"
 
     # Construct the URL using the generated UUID and combined file name
     video_url = url_for("view_video", video_name=combined_file_name, _external=True)
@@ -49,6 +65,7 @@ def upload_video():
                 "message": "success",
                 "video_name": combined_file_name,
                 "video_url": video_url,
+                "video_size": file_size,  # Include the size in the response
             }
         ),
         201,
