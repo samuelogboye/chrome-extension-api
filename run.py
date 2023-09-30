@@ -1,7 +1,36 @@
-from Extension import app, db
+from flask import Flask
+from dotenv import load_dotenv
+from flask_cors import CORS
+from models import app
 
-with app.app_context():
-    db.create_all()
+load_dotenv()
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+
+
+def get_allowed_file():
+    return [
+        ".mp4",
+        ".mkv",
+        ".MP4",
+        ".gif",
+        ".FLV",
+        ".flv",
+        ".avi",
+        ".AVI",
+        ".WebM",
+        ".webm",
+        ".3gp",
+        ".3GP",
+        ".jpg",
+    ]
+
+
+app.config["MAX_CONTENT_LENGTH"] = 50 * (1024 * 1024)
+app.config["UPLOAD_EXTENSIONS"] = get_allowed_file()
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+
+import models
