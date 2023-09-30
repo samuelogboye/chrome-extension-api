@@ -65,7 +65,7 @@ def list_videos():
 
     return jsonify({"videos": video_files}), 200
 
-
+# the view a particular video
 @app.route("/videos/<string:video_name>", methods=["GET"])
 def view_video(video_name):
     if not os.path.exists("static"):
@@ -78,6 +78,22 @@ def view_video(video_name):
     if os.path.exists(video_path):
         # You might want to use Flask's send_file function to serve the video.
         return send_file(video_path, as_attachment=False)
+    else:
+        return jsonify({"error": "Not Found", "message": "Video not found."}), 404
+
+@app.route("/<string:video_name>", methods=["DELETE"])
+def delete_video(video_name):
+    # Construct the full path to the video file
+    video_path = os.path.join("static", video_name)
+
+    # Check if the video file exists
+    if os.path.exists(video_path):
+        # Attempt to delete the video file
+        try:
+            os.remove(video_path)
+            return jsonify({"message": "success", "info": f"Video '{video_name}' has been deleted."}), 200
+        except Exception as e:
+            return jsonify({"error": "Internal Server Error", "message": f"Failed to delete video: {str(e)}"}), 500
     else:
         return jsonify({"error": "Not Found", "message": "Video not found."}), 404
 
