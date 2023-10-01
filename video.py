@@ -1,9 +1,7 @@
-import openai
 import os
 from moviepy.editor import VideoFileClip
 import tempfile
 
-openai.api_key = '.'
 
 def transcribe(video_file_path):
     # Load the video clip
