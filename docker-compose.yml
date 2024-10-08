@@ -1,0 +1,37 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: extension_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3307:3307"
+    healthcheck:
+      test: ["CMD", "mysql", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}", "-e", "SELECT 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  backend:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: chrome_api_backend
+    command: sh -c "python run.py --host 0.0.0.0 --port 5000"
+    restart: always
+    volumes:
+      - .:/code
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+          condition: service_healthy
+
+volumes:
+  db_data:
