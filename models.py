@@ -14,6 +14,13 @@ CORS(app)
 
 @app.route("/upload", methods=["POST"])
 def upload_video():
+    if "file" not in request.files:
+        return (
+            jsonify(
+                {"error": "Bad Request", "message": "File not found in request"}
+            ),
+            400,
+        )
     upload = request.files["file"]
     file_name = upload.filename
     file_name = secure_filename(file_name)
