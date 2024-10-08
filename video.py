@@ -1,6 +1,7 @@
 import os
 from moviepy.editor import VideoFileClip
 import tempfile
+import openai
 
 
 def transcribe(video_file_path):
@@ -11,8 +12,10 @@ def transcribe(video_file_path):
     audio_file = video_clip.audio
     print("b4 transcribe")
     try:
-         # Create a temporary audio file to save the extracted audio
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio_file:
+        # Create a temporary audio file to save the extracted audio
+        with tempfile.NamedTemporaryFile(
+            suffix=".wav", delete=False
+        ) as temp_audio_file:
             audio_file.write_audiofile(temp_audio_file.name)
 
         # Read the temporary audio file and transcribe it
@@ -26,6 +29,7 @@ def transcribe(video_file_path):
         # You can log the error or return an error response
         print(f"Error: {e}")
         return "Transcription error"
+
 
 def get_size(file_path):
     # Get the size of the video in bytes

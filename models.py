@@ -16,9 +16,7 @@ CORS(app)
 def upload_video():
     if "file" not in request.files:
         return (
-            jsonify(
-                {"error": "Bad Request", "message": "File not found in request"}
-            ),
+            jsonify({"error": "Bad Request", "message": "File not found in request"}),
             400,
         )
     upload = request.files["file"]
@@ -56,7 +54,6 @@ def upload_video():
     # Construct the URL using the generated UUID and combined file name
     video_url = url_for("view_video", video_name=combined_file_name, _external=True)
 
-
     # Return the URL as a JSON response
     return (
         jsonify(
@@ -71,17 +68,29 @@ def upload_video():
         ),
         201,
     )
+
+
 @app.route("/upload/base/", methods=["POST"])
 def upload_video_base():
-    base64_data = request.json.get("file")  # Assuming the base64 content is in a JSON field named "file"
+    base64_data = request.json.get(
+        "file"
+    )  # Assuming the base64 content is in a JSON field named "file"
     if not base64_data:
-        return jsonify({"error": "Bad Request", "message": "No base64 file provided"}), 400
+        return jsonify(
+            {"error": "Bad Request", "message": "No base64 file provided"}
+        ), 400
 
     # Convert the base64 data to bytes
     try:
         file_data = base64.b64decode(base64_data)
     except Exception as e:
-        return jsonify({"error": "Bad Request", "message": "Invalid base64 encoding", "status": str(e)}), 400
+        return jsonify(
+            {
+                "error": "Bad Request",
+                "message": "Invalid base64 encoding",
+                "status": str(e),
+            }
+        ), 400
 
     # Generate a random UUID
     user_id = str(uuid4())
@@ -113,11 +122,11 @@ def upload_video_base():
     ), 201
 
 
-
 @app.route("/videos", methods=["GET"])
 def list_videos():
     # Example logic for listing video files:
     video_files = []
+
     # Function to get the creation time from the filename
     def get_creation_time(filename):
         created_at = filename.split("_")[0]
@@ -139,15 +148,18 @@ def list_videos():
         video_url = url_for("view_video", video_name=filename, _external=True)
         created_at = get_creation_time(filename)
 
-        video_files_data.append({
-            "video_number": index,
-            "video_name": filename,
-            "video_url": video_url,
-            "video_size": size_mb_str,
-            "created_at": created_at
-        })
+        video_files_data.append(
+            {
+                "video_number": index,
+                "video_name": filename,
+                "video_url": video_url,
+                "video_size": size_mb_str,
+                "created_at": created_at,
+            }
+        )
 
     return jsonify({"videos": video_files_data}), 200
+
 
 # the view a particular video
 @app.route("/videos/<string:video_name>", methods=["GET"])
@@ -165,6 +177,7 @@ def view_video(video_name):
     else:
         return jsonify({"error": "Not Found", "message": "Video not found."}), 404
 
+
 @app.route("/<string:video_name>", methods=["DELETE"])
 def delete_video(video_name):
     # Construct the full path to the video file
@@ -175,9 +188,19 @@ def delete_video(video_name):
         # Attempt to delete the video file
         try:
             os.remove(video_path)
-            return jsonify({"message": "success", "info": f"Video '{video_name}' has been deleted."}), 200
+            return jsonify(
+                {
+                    "message": "success",
+                    "info": f"Video '{video_name}' has been deleted.",
+                }
+            ), 200
         except Exception as e:
-            return jsonify({"error": "Internal Server Error", "message": f"Failed to delete video: {str(e)}"}), 500
+            return jsonify(
+                {
+                    "error": "Internal Server Error",
+                    "message": f"Failed to delete video: {str(e)}",
+                }
+            ), 500
     else:
         return jsonify({"error": "Not Found", "message": "Video not found."}), 404
 
@@ -190,7 +213,6 @@ def transcribe_video(video_name):
 
     # Check if the video file exists
     if os.path.exists(video_path):
-
         transcribed_text = transcribe(video_path)
         # Return the URL as a JSON response
         return (
@@ -211,8 +233,9 @@ def transcribe_video(video_name):
                     "message": "Video not found.",
                 }
             ),
-            404
+            404,
         )
+
 
 @app.route("/")
 def cron():
@@ -221,13 +244,22 @@ def cron():
         200,
     )
 
+
 # Define a custom error handler for 404 (Not Found) errors
 @app.errorhandler(404)
 def page_not_found(error):
-    return jsonify({"error": "Not Found", "message": "The requested URL was not found on the server."}), 404
+    return jsonify(
+        {
+            "error": "Not Found",
+            "message": "The requested URL was not found on the server.",
+        }
+    ), 404
+
 
 # This is a catch-all route that handles any undefined path
-@app.route('/<path:path>', methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"])
+@app.route(
+    "/<path:path>", methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
+)
 def undefined_route(path):
     # Raise a 404 error to trigger the custom error handler
     return page_not_found(404)
